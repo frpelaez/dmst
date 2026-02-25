@@ -1,0 +1,15 @@
+[project]
+name = "dmst"
+version = "0.1.0"
+description = "Genetic Algorithm implementation for the dMST problem"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "matplotlib>=3.10.8",
+]
+
+[tool.uv]
+package = true
+
+[project.scripts]
+dmst = "dmst.main:main"
