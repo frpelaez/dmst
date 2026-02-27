@@ -9,6 +9,10 @@ def plot_pareto_front(
     output_dir: str | None = None,
     show_plot: bool = True,
 ):
+    """
+    Scatter plot to visualize the Pareto front (set of non dominated solutions)
+    in the objective function 2D space.
+    """
     weights_pop = [fit[0] for fit in fitness_population]
     risks_pop = [fit[1] for fit in fitness_population]
 
@@ -66,6 +70,9 @@ def plot_history(
     output_dir: str | None = None,
     show_plot: bool = True,
 ):
+    """
+    Line plots to see the evolution of the average and minimum weight and risk in the population
+    """
     generations = list(range(len(history.mean_weights)))
 
     history_mean_weight = history.mean_weights

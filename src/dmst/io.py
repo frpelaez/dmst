@@ -4,6 +4,9 @@ from dmst.ga import DMSTGraph
 
 
 def load_graph_from_csv(filepath: str) -> tuple[DMSTGraph, int]:
+    """
+    Load a dMSTr graph (`n_nodes` and `weights`, `reliabilities` matrices) from a CSV file
+    """
     weights, reliabilities = {}, {}
     visited = set()
 
@@ -31,6 +34,9 @@ def load_graph_from_csv(filepath: str) -> tuple[DMSTGraph, int]:
 
 
 def save_graph_to_csv(filepath: str, n_nodes: int, graph: DMSTGraph):
+    """
+    Save a dMSTr graph to a file for experiment reproductibility
+    """
     with open(filepath, "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
         writer.writerow(["from", "to", "weight", "prob"])

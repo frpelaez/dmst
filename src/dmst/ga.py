@@ -13,12 +13,23 @@ type PopulationFitness = list[tuple[float, float]]
 
 @dataclass
 class DMSTGraph:
+    """
+    Object that represents agraph in the context of the d-MSTr problem
+    """
+
     weights: Weights
     reliabilities: Reliabilities
+
+    def n_nodes(self) -> int:
+        return 1 + max(edge[0] for edge in self.weights)
 
 
 @dataclass
 class GAConfig:
+    """
+    Object that encapsulates the configuration values for the Genetic Algorithm
+    """
+
     population_size: int
     generations: int
     mutation_rate: float = 0.05
@@ -34,6 +45,10 @@ class GAConfig:
 
 @dataclass
 class HistoryResults:
+    """
+    Object that centralizes the evolution of the metrics (avg & min weights and risks) of a Genetic Algorithm execution
+    """
+
     mean_weights: list[float]
     mean_risks: list[float]
     best_weights: list[float]
@@ -258,11 +273,11 @@ def run_ga_dmst(
 if __name__ == "__main__":
     pop_example = ["A", "B", "C", "D"]
     fit_example = [
-        (1000.0, 5.0),  # A: Muy barato, alto riesgo
-        (1200.0, 4.0),  # B: Buen equilibrio
-        (1500.0, 4.5),  # C: Dominado por B (B es más barato y tiene menos riesgo)
-        (2000.0, 2.0),  # D: Muy caro, mínimo riesgo
-        (1100.0, 6.0),  # E: Dominado por A (A es más barato y tiene menos riesgo)
+        (1000.0, 5.0),
+        (1200.0, 4.0),
+        (1500.0, 4.5),
+        (2000.0, 2.0),
+        (1100.0, 6.0),
     ]
 
     best_inds, best_fitness = get_pareto_front(pop_example, fit_example)  # type: ignore
