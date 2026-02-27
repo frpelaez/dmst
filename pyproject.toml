@@ -11,5 +11,7 @@ dependencies = [
 [tool.uv]
 package = true
 
+[tool.pyrefly]
+
 [project.scripts]
 dmst = "dmst.main:main"

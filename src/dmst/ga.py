@@ -1,12 +1,20 @@
-from dataclasses import dataclass
 import math
 import random
+from dataclasses import dataclass
+
 from dmst.prufer import Prufer, edges_from_tree, prufer_decode
+
 
 type Weights = dict[tuple[int, int], int]
 type Reliabilities = dict[tuple[int, int], float]
 type Population = list[Prufer]
 type PopulationFitness = list[tuple[float, float]]
+
+
+@dataclass
+class DMSTGraph:
+    weights: Weights
+    reliabilities: Reliabilities
 
 
 @dataclass
@@ -17,10 +25,19 @@ class GAConfig:
     tournament_size: int = 3
     penalty: int = 10_000
 
+    @staticmethod
+    def default() -> "GAConfig":
+        return GAConfig(
+            population_size=100, generations=200, mutation_rate=0.05, tournament_size=3
+        )
 
-__DEFAULT_GACONFIG: GAConfig = GAConfig(
-    population_size=100, generations=200, mutation_rate=0.05, tournament_size=3
-)
+
+@dataclass
+class HistoryResults:
+    mean_weights: list[float]
+    mean_risks: list[float]
+    best_weights: list[float]
+    best_risks: list[float]
 
 
 def fitness(
@@ -155,11 +172,18 @@ def mutation(prufer: Prufer, mutation_probability: float = 0.05) -> Prufer:
 
 def run_ga_dmst(
     n_nodes: int,
-    weights: Weights,
-    reliabilities: Reliabilities,
+    graph: DMSTGraph,
     max_d: int,
-    config: GAConfig = __DEFAULT_GACONFIG,
-) -> tuple[Population, PopulationFitness]:
+    config: GAConfig = GAConfig.default(),
+) -> tuple[Population, PopulationFitness, PopulationFitness, HistoryResults]:
+    weights = graph.weights
+    reliabilities = graph.reliabilities
+
+    history_mean_weights = []
+    history_mean_risks = []
+    history_best_weights = []
+    history_best_risks = []
+
     population = generate_random_population(config.population_size, n_nodes)
 
     for gen in range(config.generations):
@@ -167,6 +191,27 @@ def run_ga_dmst(
             fitness(prufer, weights, reliabilities, max_d) for prufer in population
         ]
         pareto_front, fitness_front = get_pareto_front(population, fitness_population)
+
+        valid_fits = [f for f in fitness_front if f[0] < config.penalty]
+        if valid_fits:
+            mean_weight = sum(f[0] for f in valid_fits) / len(valid_fits)
+            mean_risk = sum(f[1] for f in valid_fits) / len(valid_fits)
+            min_weight = min(f[0] for f in valid_fits)
+            min_risk = min(f[1] for f in valid_fits)
+        else:
+            mean_weight = (
+                history_mean_weights[-1] if history_mean_weights else config.penalty
+            )
+            mean_risk = history_mean_risks[-1] if history_mean_risks else config.penalty
+            min_weight = (
+                history_best_weights[-1] if history_best_weights else config.penalty
+            )
+            min_risk = history_best_risks[-1] if history_best_risks else config.penalty
+
+        history_mean_weights.append(mean_weight)
+        history_mean_risks.append(mean_risk)
+        history_best_weights.append(min_weight)
+        history_best_risks.append(min_risk)
 
         if gen % 20 == 0 or gen == config.generations - 1:
             print(
@@ -198,20 +243,29 @@ def run_ga_dmst(
     ]
     final_front, final_fitness_front = get_pareto_front(population, final_fitness)
 
-    return final_front, final_fitness_front
+    population_valid_fitness = [f for f in final_fitness if f[0] < config.penalty]
+
+    hist_results = HistoryResults(
+        history_mean_weights,
+        history_mean_risks,
+        history_best_weights,
+        history_best_risks,
+    )
+
+    return final_front, final_fitness_front, population_valid_fitness, hist_results
 
 
 if __name__ == "__main__":
     pop_example = ["A", "B", "C", "D"]
     fit_example = [
-        (1000, 5.0),  # A: Muy barato, alto riesgo
-        (1200, 4.0),  # B: Buen equilibrio
-        (1500, 4.5),  # C: Dominado por B (B es más barato y tiene menos riesgo)
-        (2000, 2.0),  # D: Muy caro, mínimo riesgo
-        (1100, 6.0),  # E: Dominado por A (A es más barato y tiene menos riesgo)
+        (1000.0, 5.0),  # A: Muy barato, alto riesgo
+        (1200.0, 4.0),  # B: Buen equilibrio
+        (1500.0, 4.5),  # C: Dominado por B (B es más barato y tiene menos riesgo)
+        (2000.0, 2.0),  # D: Muy caro, mínimo riesgo
+        (1100.0, 6.0),  # E: Dominado por A (A es más barato y tiene menos riesgo)
     ]
 
-    best_inds, best_fitness = get_pareto_front(pop_example, fit_example)
+    best_inds, best_fitness = get_pareto_front(pop_example, fit_example)  # type: ignore
 
     for ex, fit in zip(best_inds, best_fitness):
         cost, risk = fit

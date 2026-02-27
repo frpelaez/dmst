@@ -1,8 +1,9 @@
-from dmst.ga import GAConfig, run_ga_dmst
+import pprint
+
+from dmst.ga import DMSTGraph, GAConfig, run_ga_dmst
 
 
 def main():
-    print("Hello from dmst!")
     weights = {
         (0, 3): 10,
         (1, 3): 15,
@@ -30,29 +31,25 @@ def main():
     n_nodes = 6
     max_d = 3
 
+    graph = DMSTGraph(weights, reliabilities)
+
     config = GAConfig(
-        population_size=50, generations=200, mutation_rate=0.1, tournament_size=4
+        population_size=50, generations=100, mutation_rate=0.1, tournament_size=2
     )
 
-    print("=" * 31)
+    print("=" * 25)
     print("Running dmst with:")
-    print(f"    n_nodes:       {n_nodes}")
-    print(f"    max_d:         {max_d}")
-    print(f"    weights:       {weights}")
-    print(f"    reliabilities: {weights}")
-    print("GA config:")
-    print(f"    {config}")
-    print("=" * 31, "\n")
+    print(f"- n_nodes: {n_nodes}")
+    print(f"- max_d:   {max_d}")
+    print(f"- weights:       \n{pprint.pformat(weights, indent=2)}")
+    print(f"- reliabilities: \n{pprint.pformat(reliabilities, indent=2)}")
+    print("- GA config:")
+    print(f"{pprint.pformat(config.__dict__, indent=2)}")
+    print("=" * 25, "\n")
 
-    pareto_front, fitness_front = run_ga_dmst(
-        n_nodes, weights, reliabilities, max_d, config=config
+    pareto_front, fitness_front, _, hist = run_ga_dmst(
+        n_nodes, graph, max_d, config=config
     )
-
-    # print("\n", "=" * 11, " Results ", "=" * 11, sep="")
-    # print("Pareto Front:")
-    # print(f"    {pareto_front}")
-    # print(f"    {fitness_front}")
-    # print("=" * 31)
 
 
 if __name__ == "__main__":
