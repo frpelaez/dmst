@@ -1,0 +1,42 @@
+import csv
+
+from dmst.ga import DMSTGraph
+
+
+def load_graph_from_csv(filepath: str) -> tuple[DMSTGraph, int]:
+    weights, reliabilities = {}, {}
+    visited = set()
+
+    try:
+        with open(filepath, "r", encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            for line in reader:
+                u = int(line["from"])
+                v = int(line["to"])
+                w = float(line["weight"])
+                p = float(line["prob"])
+                weights[(u, v)] = w
+                reliabilities[(u, v)] = p
+                visited.add(u)
+                visited.add(v)
+
+        n_nodes = max(visited) + 1
+        print(
+            f"[IO-INFO] Graph successfully loaded from CSV: {len(weights)} edges and {n_nodes} nodes"
+        )
+        return DMSTGraph(weights, reliabilities), n_nodes
+    except Exception as e:
+        print(f"[IO-ERROR] Unnable to read CSV: {e}")
+        exit(1)
+
+
+def save_graph_to_csv(filepath: str, n_nodes: int, graph: DMSTGraph):
+    with open(filepath, "w", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerow(["from", "to", "weight", "prob"])
+        for i in range(n_nodes):
+            for j in range(i + 1, n_nodes):
+                writer.writerow(
+                    [i, j, graph.weights[(i, j)], graph.reliabilities[(i, j)]]
+                )
+    print(f"[IO-INFO] Graph successfully saved to: {filepath}")

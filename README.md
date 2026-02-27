@@ -3,6 +3,16 @@
 Este programa ejecuta un ejemplo de búsuqeda de soluciones a una instancia del problema
 d-MSTr (árbol de recubrimiento de coste mínimo con restricción de grado y fiabilidad).
 
+## Primer paso
+
+Si estás leyendo esto desde el repositorio en Github, puedes clonar el repositorio ejecutando
+```console
+git clone https://github.com/frpelaez/dmst.git
+cd dmst
+```
+
+Si has descargado la carpeta comprimida `dmst.zip`, simplemente descomprímela y entra en ella.
+
 ## Requisitos previos a la ejecución
 
 *Nota*: Si tienes `uv` instalado, puedes pasar directamente a la ejecución escribiendo en la consola

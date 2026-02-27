@@ -13,6 +13,5 @@ wheels/
 memoria/
 figures/
 
-# Ejemplo
-example.png
-data/
+# Grafos
+graphs/
