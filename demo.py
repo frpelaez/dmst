@@ -14,12 +14,14 @@ from dmst.io import load_graph_from_csv, save_graph_to_csv
 from dmst.plots import plot_history, plot_pareto_front
 
 
-def generate_random_graph(n_nodes: int) -> DMSTGraph:
+def generate_random_graph(n_nodes: int, density: float = 1.0) -> DMSTGraph:
+    density = max(0.0, min(1.0, density))
     weights, reliabilities = {}, {}
     for u in range(n_nodes):
         for v in range(u + 1, n_nodes):
-            weights[(u, v)] = random.randint(10, 100)
-            reliabilities[(u, v)] = random.uniform(0.65, 0.95)
+            if random.random() < density:
+                weights[(u, v)] = random.randint(10, 100)
+                reliabilities[(u, v)] = random.uniform(0.65, 0.95)
 
     return DMSTGraph(weights, reliabilities)
 

@@ -207,26 +207,24 @@ def run_ga_dmst(
         ]
         pareto_front, fitness_front = get_pareto_front(population, fitness_population)
 
-        valid_fits = [f for f in fitness_front if f[0] < config.penalty]
+        valid_fits = [
+            f for f in fitness_front if f[0] < config.penalty and f[1] < config.penalty
+        ]
         if valid_fits:
             mean_weight = sum(f[0] for f in valid_fits) / len(valid_fits)
             mean_risk = sum(f[1] for f in valid_fits) / len(valid_fits)
             min_weight = min(f[0] for f in valid_fits)
             min_risk = min(f[1] for f in valid_fits)
-        else:
-            mean_weight = (
-                history_mean_weights[-1] if history_mean_weights else config.penalty
-            )
-            mean_risk = history_mean_risks[-1] if history_mean_risks else config.penalty
-            min_weight = (
-                history_best_weights[-1] if history_best_weights else config.penalty
-            )
-            min_risk = history_best_risks[-1] if history_best_risks else config.penalty
+            # else:
+            #     mean_weight = history_mean_weights[-1] if history_mean_weights else 0
+            #     mean_risk = history_mean_risks[-1] if history_mean_risks else 0
+            #     min_weight = history_best_weights[-1] if history_best_weights else 0
+            #     min_risk = history_best_risks[-1] if history_best_risks else 0
 
-        history_mean_weights.append(mean_weight)
-        history_mean_risks.append(mean_risk)
-        history_best_weights.append(min_weight)
-        history_best_risks.append(min_risk)
+            history_mean_weights.append(mean_weight)
+            history_mean_risks.append(mean_risk)
+            history_best_weights.append(min_weight)
+            history_best_risks.append(min_risk)
 
         if gen % 20 == 0 or gen == config.generations - 1:
             print(

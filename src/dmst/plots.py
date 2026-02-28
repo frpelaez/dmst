@@ -73,12 +73,14 @@ def plot_history(
     """
     Line plots to see the evolution of the average and minimum weight and risk in the population
     """
-    generations = list(range(len(history.mean_weights)))
-
     history_mean_weight = history.mean_weights
     history_mean_risk = history.mean_risks
     history_best_weight = history.best_weights
     history_best_risk = history.best_risks
+
+    generations = list(range(len(history.mean_weights)))
+    start = len(generations) - len(history_mean_weight)
+    generations = generations[start:]
 
     fig, ax1 = plt.subplots(figsize=(10, 6))
 
@@ -136,7 +138,10 @@ def plot_history(
     fig.tight_layout()
 
     if output_dir:
-        path = os.path.join(output_dir, "convergence.png")
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+        count = len(os.listdir(output_dir)) + 1
+        path = os.path.join(output_dir, f"convergence_{count}.png")
         plt.savefig(path, dpi=300)
         print(f"Convergence plot successfully saved to {path}")
         if show_plot:

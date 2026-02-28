@@ -1,6 +1,7 @@
 import csv
+from typing import Any
 
-from dmst.ga import DMSTGraph
+from dmst.ga import DMSTGraph, GAConfig
 
 
 def load_graph_from_csv(filepath: str) -> tuple[DMSTGraph, int]:
@@ -46,3 +47,6 @@ def save_graph_to_csv(filepath: str, n_nodes: int, graph: DMSTGraph):
                     [i, j, graph.weights[(i, j)], graph.reliabilities[(i, j)]]
                 )
     print(f"[IO-INFO] Graph successfully saved to: {filepath}")
+
+
+def load_config_from_json(filepath: str) -> tuple[GAConfig, dict[str, Any]]: ...
