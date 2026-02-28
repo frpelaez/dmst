@@ -47,7 +47,7 @@ python demo.py
 Es posible ejecutar la demostración sobre un grafo cargado en un fichero CSV. El formato de este archivo ha de ser el siguiente
 ```csv
 // Supón que tienes esto en `datos.csv`
-u,v,weight,prob
+from,to,weight,prob
 1,2,50,0.96
 1,3,70,0.91
 2,3,96,0.92
